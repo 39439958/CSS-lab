@@ -1,0 +1,28 @@
+main.c: In function ‘main’:
+main.c:12:5: warning: implicit declaration of function ‘memset’ [-Wimplicit-function-declaration]
+   12 |     memset(&host_addr, 0, sizeof(host_addr));
+      |     ^~~~~~
+main.c:12:5: warning: incompatible implicit declaration of built-in function ‘memset’
+main.c:3:1: note: include ‘<string.h>’ or provide a declaration of ‘memset’
+    2 | #include <netinet/in.h>
+  +++ |+#include <string.h>
+    3 | 
+main.c:28:9: warning: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+   28 |         printf("sent a message to the client:\n");
+      |         ^~~~~~
+main.c:28:9: warning: incompatible implicit declaration of built-in function ‘printf’
+main.c:3:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+    2 | #include <netinet/in.h>
+  +++ |+#include <stdio.h>
+    3 | 
+main.c:29:9: warning: implicit declaration of function ‘write’ [-Wimplicit-function-declaration]
+   29 |         write(client_sock_fd, msg, strlen(msg));
+      |         ^~~~~
+main.c:29:36: warning: implicit declaration of function ‘strlen’ [-Wimplicit-function-declaration]
+   29 |         write(client_sock_fd, msg, strlen(msg));
+      |                                    ^~~~~~
+main.c:29:36: warning: incompatible implicit declaration of built-in function ‘strlen’
+main.c:29:36: note: include ‘<string.h>’ or provide a declaration of ‘strlen’
+main.c:30:9: warning: implicit declaration of function ‘close’ [-Wimplicit-function-declaration]
+   30 |         close(client_sock_fd);
+      |         ^~~~~

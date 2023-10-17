@@ -1,0 +1,9 @@
+main.c: In function ‘main’:
+main.c:32:9: warning: implicit declaration of function ‘write’; did you mean ‘fwrite’? [-Wimplicit-function-declaration]
+   32 |         write(client_sock_fd, msg, strlen(msg));
+      |         ^~~~~
+      |         fwrite
+main.c:33:9: warning: implicit declaration of function ‘close’; did you mean ‘pclose’? [-Wimplicit-function-declaration]
+   33 |         close(client_sock_fd);
+      |         ^~~~~
+      |         pclose

@@ -1,0 +1,15 @@
+mini-lib.c: In function ‘printf’:
+mini-lib.c:26:14: warning: implicit declaration of function ‘malloc’ [-Wimplicit-function-declaration]
+   26 |     char *s =malloc(sizeof(char *) * 100);
+      |              ^~~~~~
+mini-lib.c:2:1: note: ‘malloc’ is defined in header ‘<stdlib.h>’; did you forget to ‘#include <stdlib.h>’?
+    1 | #include "mini-lib.h"
+  +++ |+#include <stdlib.h>
+    2 | 
+mini-lib.c:26:14: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   26 |     char *s =malloc(sizeof(char *) * 100);
+      |              ^~~~~~
+mini-lib.c:57:5: warning: implicit declaration of function ‘free’ [-Wimplicit-function-declaration]
+   57 |     free(s);
+      |     ^~~~
+mini-lib.c:57:5: note: ‘free’ is defined in header ‘<stdlib.h>’; did you forget to ‘#include <stdlib.h>’?

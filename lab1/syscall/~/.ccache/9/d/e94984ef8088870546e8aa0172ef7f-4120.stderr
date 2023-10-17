@@ -1,0 +1,4 @@
+mini-lib.c: In function ‘printchar’:
+mini-lib.c:27:15: warning: initialization of ‘char *’ from ‘char’ makes pointer from integer without a cast [-Wint-conversion]
+   27 |     char *s = c;
+      |               ^
