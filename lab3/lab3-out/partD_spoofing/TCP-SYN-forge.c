@@ -9,16 +9,9 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/if_ether.h>
-#include <netinet/udp.h>
+#include <netinet/tcp.h>
 #include <linux/if_packet.h>
 #include <arpa/inet.h>
-
-#define TODO()\
-do{\
-    extern int printf(char *, ...);\
-    printf("Add your code here: file %s, line %d\n", __FILE__, __LINE__);\
-}while(0)
-
 
 
 struct ifreq ifreq_c, ifreq_i, ifreq_ip; /// for each ioctl keep diffrent ifreq structure otherwise error may come in sending(sendto )
@@ -71,24 +64,17 @@ void get_mac() {
 	total_len += sizeof(struct ethhdr);
 }
 
-void get_data() {
-	sendbuff[total_len++] = 0x68;
-	sendbuff[total_len++] = 0x65;
-	sendbuff[total_len++] = 0x6C;
-	sendbuff[total_len++] = 0x6C;
-	sendbuff[total_len++] = 0x6F;
-}
-
-void get_udp() {
-	struct udphdr *uh = (struct udphdr *)(sendbuff + sizeof(struct iphdr) + sizeof(struct ethhdr));
-	// Exercise 5: Write UDP_forge.c in your project to achieve the forgery of UDP protocol packets:
-    // Add your code here:
-    uh->source = htons(8888);
-    uh->dest = htons(8888);
-    uh->len = 13;
-    total_len += sizeof(struct udphdr);
-    get_data();
-    uh->check = htons(checksum((unsigned char *)(sendbuff + sizeof(struct ethhdr) + sizeof(struct iphdr)), 13));
+void get_tcp() {
+    struct tcphdr *tcp = (struct tcphdr*)(sendbuff + sizeof(struct iphdr) + sizeof(struct ethhdr));
+	tcp->th_sport = htons(8888);  // src port
+    tcp->th_dport = htons(8888);  // dest port
+    tcp->th_seq = htonl(1);  // seq
+    tcp->th_ack = 0;  // ack
+    tcp->th_off = 5;  // offset
+    tcp->th_flags = TH_SYN;  // SYN
+    tcp->th_win = htons(5840);  // window size
+    tcp->th_urp = 0;  // urgent pointer
+    tcp->th_sum = htons(checksum((unsigned char *)(sendbuff + sizeof(struct ethhdr) + sizeof(struct iphdr)), 20));// checksum
 }
 
 unsigned short checksum(unsigned char *buf, int size) {
@@ -125,12 +111,12 @@ void get_ip(){
 	iph->tos = 16;
 	iph->id = htons(10201);
 	iph->ttl = 64;
-	iph->protocol = 17;
+	iph->protocol = IPPROTO_TCP;
 	iph->saddr = inet_addr(inet_ntoa((((struct sockaddr_in *)&(ifreq_ip.ifr_addr))->sin_addr)));
 	iph->daddr = inet_addr("192.168.117.138"); // put destination IP address
 	printf("destIP:%.2X\n", iph->daddr);
 	total_len += sizeof(struct iphdr);
-	get_udp();
+	get_tcp();
 	iph->tot_len = htons(total_len - sizeof(struct ethhdr));
 	iph->check = htons(checksum((unsigned char *)(sendbuff + sizeof(struct ethhdr)), sizeof(struct iphdr)));
 }

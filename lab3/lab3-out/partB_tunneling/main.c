@@ -26,6 +26,7 @@ unsigned short total_len;
 
 int main(){
     socket_id = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (socket_id == -1) return 0;
 
     char myname[NAMESIZE];
     printf("Enter your name: ");
@@ -51,7 +52,7 @@ int main(){
             tunnel *recv = (tunnel *)(recvbuff + sizeof(struct iphdr)
                                       + sizeof(struct icmphdr)); 
             decrypt((recvbuff + sizeof(struct iphdr)));
-            if(filter(icmph, n)){
+            if(filter(icmph)){
                 printf("\t%s : ", recv->sname);
                 printf("%s\n", recv->data);    
             }
@@ -61,7 +62,6 @@ int main(){
     while (1){
         char *databuff = tnel->data;
         fgets(databuff, sizeof(tnel->data), stdin);
-        // total_len = strcspn(databuff, "\n");
         databuff[strcspn(databuff, "\n")] = '\0';
         if (strlen(databuff) == 0)
             continue;

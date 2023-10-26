@@ -83,26 +83,45 @@ void get_arp() {
 	arp->ea_hdr.ar_hln = 6;
 	arp->ea_hdr.ar_pln = 4;
 	arp->ea_hdr.ar_op = htons(ARPOP_REQUEST); // ARP request
+
+    memset(&ifreq_c, 0, sizeof(ifreq_c));
+	strncpy(ifreq_c.ifr_name, "enp5s0", IFNAMSIZ - 1);
+	if ((ioctl(sock_raw, SIOCGIFHWADDR, &ifreq_c)) < 0)
+		printf("error in SIOCGIFHWADDR ioctl reading");
+
+    memset(&ifreq_ip, 0, sizeof(ifreq_ip));
+	strncpy(ifreq_ip.ifr_name, "enp5s0", IFNAMSIZ - 1);
+	if (ioctl(sock_raw, SIOCGIFADDR, &ifreq_ip) < 0) {
+		printf("error in SIOCGIFADDR \n");
+	}
 	/* sender hardware address */
 	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
  // Add your code here:
- TODO();
-
+    arp->arp_sha[0] = (unsigned char)(ifreq_c.ifr_hwaddr.sa_data[0]);
+	arp->arp_sha[1] = (unsigned char)(ifreq_c.ifr_hwaddr.sa_data[1]);
+	arp->arp_sha[2] = (unsigned char)(ifreq_c.ifr_hwaddr.sa_data[2]);
+	arp->arp_sha[3] = (unsigned char)(ifreq_c.ifr_hwaddr.sa_data[3]);
+	arp->arp_sha[4] = (unsigned char)(ifreq_c.ifr_hwaddr.sa_data[4]);
+	arp->arp_sha[5] = (unsigned char)(ifreq_c.ifr_hwaddr.sa_data[5]);
 	/* sender protocol address */
 	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
  // Add your code here:
- TODO();
-
+    arp->arp_spa = inet_addr(inet_ntoa((((struct sockaddr_in *)&(ifreq_ip.ifr_addr))->sin_addr)));
 	/* target hardware address */
 	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
  // Add your code here:
- TODO();
-
+    // destmac = ff.ff.ff.ff.ff.ff
+    arp->arp_tha[0] = DESTMAC0;
+	arp->arp_tha[1] = DESTMAC1;
+	arp->arp_tha[2] = DESTMAC2;
+	arp->arp_tha[3] = DESTMAC3;
+	arp->arp_tha[4] = DESTMAC4;
+	arp->arp_tha[5] = DESTMAC5;
 	/* target protocol address */
 	// Exercise 4: Complete ARP_forge.c in your project to achieve the forgery of ARP protocol packets:
  // Add your code here:
- TODO();
-
+    arp->arp_tpa = "192.168.117.138";
+    total_len += sizeof(struct ether_arp);
 }
 
 int main() {

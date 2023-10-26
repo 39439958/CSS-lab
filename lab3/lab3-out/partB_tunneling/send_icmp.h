@@ -20,7 +20,7 @@ typedef struct icmp_tunnel{
 
 void init_icmp_packet(const char *myname, const char *whoname, const char *dst_ip);
 int senddata(char *data);
-int filter(struct icmphdr *icmph, int n);
+int filter(struct icmphdr *icmph);
 void encrypt(unsigned char *buff);
 void decrypt(unsigned char *buff);
 

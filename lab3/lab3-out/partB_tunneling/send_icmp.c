@@ -72,10 +72,8 @@ int senddata(char *data){
     strcpy(sendt->data,tnel->data);
 
     // total_len += 10;
-    // unsigned short checksum = icmp_checksum((unsigned short *)sendbuff, total_len);
-    // icmph->checksum = checksum;
+    icmph->checksum = htons(icmp_checksum((unsigned short *)(sendbuff + sizeof(struct iphdr)), sizeof(struct icmphdr)));
     encrypt(sendbuff);
-
     int bytes_sent = sendto(socket_id, sendbuff, sizeof(sendbuff), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
     if (bytes_sent == -1) {
         perror("ICMP packet send failed");
@@ -86,16 +84,16 @@ int senddata(char *data){
     return 0;
 }
 
-int filter(struct icmphdr *icmph, int n){
+int filter(struct icmphdr *icmph){
     tunnel *recv = (tunnel *)(recvbuff + sizeof(struct iphdr)
                                       + sizeof(struct icmphdr)); 
 
-    // total_len = n - sizeof(struct iphdr); // sub the header of ip
-    // unsigned short checksum = icmph->checksum;
-    // icmph->checksum = 0;
+    unsigned short checksum = icmph->checksum;
+    icmph->checksum = 0;
 
     if (icmph->type != ICMP_ECHO ||
-        (strcmp(recv->dname, tnel->sname) != 0)) 
+        (strcmp(recv->dname, tnel->sname) != 0) ||
+        (htons(icmp_checksum((unsigned short *)(sendbuff + sizeof(struct iphdr)), sizeof(struct icmphdr))) != checksum)) 
         return 0;
     return 1;
 }
